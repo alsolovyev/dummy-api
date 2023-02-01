@@ -32,7 +32,10 @@ func main() {
 	defer cancel()
 
 	// Initialize the repository layer
-	_ := filerepo.New()
+	filerepo := filerepo.New()
+
+	// Initialize the usecase layer
+	_ := usecase.New(filerepo)
 
 	// Initialize the controller layer
 	r := controller.New()
