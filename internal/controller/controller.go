@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"fmt"
+
 	"github.com/alsolovyev/dummy-api/internal/entity"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -14,7 +16,7 @@ func New(f entity.FileUseCaser) *chi.Mux {
 
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/ping", handlePing)
-		r.With(filenameMiddleware).Get("/file/{name}", handleFile(f))
+		r.With(filenameMiddleware).Get(fmt.Sprintf("/file/{%s}", filenameKey), handleFile(f))
 	})
 
 	return r
