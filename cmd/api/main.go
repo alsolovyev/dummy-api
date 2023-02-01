@@ -1,8 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/alsolovyev/dummy-api/pkg/httpserver"
 	"github.com/alsolovyev/dummy-api/pkg/logger"
@@ -18,14 +23,35 @@ func main() {
 	l := logger.New()
 	l.Info("Launching the app")
 
+	// Set up a channel to receive OS signals
+	stop := make(chan os.Signal, 1)
+	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
+
+	// Create a context with a timeout
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
 	// Initialize the adapter layer
 	// Create an HTTP server
 	m := http.NewServeMux()
 	m.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "hello\n")
 	}))
+
 	hs := httpserver.New(address, port, m)
-	if err := hs.Run(); err != http.ErrServerClosed {
-		l.Errorf("An error occurred while running HTTP server: %s", err.Error())
+	go func() {
+		if err := hs.Run(); err != http.ErrServerClosed {
+			l.Errorf("An error occurred while running HTTP server: %s", err.Error())
+			stop <- syscall.SIGTERM
+		}
+	}()
+
+	<-stop
+
+	l.Info("Shutting down the app")
+
+	// Shutdown the HTTP server
+	if err := hs.Stop(ctx); err != nil {
+		l.Errorf("Ann error occurred while shutting down HTTP server gracefully: %s", err.Error())
 	}
 }
