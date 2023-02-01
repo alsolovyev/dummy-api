@@ -2,13 +2,13 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
+	"github.com/alsolovyev/dummy-api/internal/controller"
 	"github.com/alsolovyev/dummy-api/pkg/httpserver"
 	"github.com/alsolovyev/dummy-api/pkg/logger"
 )
@@ -31,14 +31,12 @@ func main() {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 
+	// Initialize the controller layer
+	r := controller.New()
+
 	// Initialize the adapter layer
 	// Create an HTTP server
-	m := http.NewServeMux()
-	m.Handle("/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "hello\n")
-	}))
-
-	hs := httpserver.New(address, port, m)
+	hs := httpserver.New(address, port, r)
 	go func() {
 		if err := hs.Run(); err != http.ErrServerClosed {
 			l.Errorf("An error occurred while running HTTP server: %s", err.Error())
