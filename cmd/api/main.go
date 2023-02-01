@@ -1,7 +1,9 @@
 package main
 
-import "fmt"
+import "github.com/alsolovyev/dummy-api/pkg/logger"
 
 func main() {
-	fmt.Println("Hello")
+	// Create a logger
+	l := logger.New()
+	l.Info("Launching the app")
 }
