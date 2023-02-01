@@ -9,6 +9,8 @@ import (
 	"time"
 
 	"github.com/alsolovyev/dummy-api/internal/controller"
+	"github.com/alsolovyev/dummy-api/internal/repository/filerepo"
+	"github.com/alsolovyev/dummy-api/internal/usecase"
 	"github.com/alsolovyev/dummy-api/pkg/httpserver"
 	"github.com/alsolovyev/dummy-api/pkg/logger"
 )
@@ -35,10 +37,10 @@ func main() {
 	filerepo := filerepo.New()
 
 	// Initialize the usecase layer
-	_ := usecase.New(filerepo)
+	usecase := usecase.New(filerepo)
 
 	// Initialize the controller layer
-	r := controller.New()
+	r := controller.New(usecase.File)
 
 	// Initialize the adapter layer
 	// Create an HTTP server
