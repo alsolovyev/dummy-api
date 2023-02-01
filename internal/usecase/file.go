@@ -12,7 +12,7 @@ func newFileUseCase(r entity.FileRepositoryer) *FileUseCase {
 	}
 }
 
-func (f *FileUseCase) GetFile(p string) (interface{}, error) {
+func (f *FileUseCase) GetFile(p string) (interface{}, *entity.Error) {
 	d, err := f.Repository.GetFile(p)
 
 	if err != nil {
