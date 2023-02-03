@@ -52,8 +52,21 @@ It is now possible to modify, add, or delete files without the requirement of re
 ## Endpoints
 The following endpoints are available:
 
-### GET /api/v1/file/{name}
+### GET `/api/v1/file/{name}`
 Retrieves a specific file based on its name and parses its data based on its extension. Currently, it supports parsing of JSON formatted files with the ".json" extension, as well as text files without an extension.
+
+
+<br />
+
+## Features
+The following features are available:
+
+### Delay
+The delay middleware that allows you to add a delay to your HTTP requests. This is useful for testing purposes, or for simulating slow responses in a controlled environment. The middleware reads the value of the "delay" query parameter from the URL of the incoming request. If the "delay" parameter is present, the middleware parses the duration from its value and waits for the specified duration using the `time.Sleep` function. If the duration value is not valid, the middleware returns a "400 Bad Request" HTTP response with an error message.
+```shell
+curl 'http://localhost:8181/api/v1/ping?delay=2s'
+curl 'http://localhost:8181/api/v1/file/users.json?delay=5s' | json_pp
+```
 
 
 <br />
