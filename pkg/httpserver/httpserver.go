@@ -11,7 +11,7 @@ const (
 	idleTimeout    = 5 * time.Second
 	maxHeaderBytes = 1 << 20
 	readTimeout    = 10 * time.Second
-	writeTimeout   = 10 * time.Second
+	writeTimeout   = 60 * time.Second
 )
 
 type Server struct {
