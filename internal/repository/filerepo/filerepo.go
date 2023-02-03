@@ -2,13 +2,14 @@ package filerepo
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"net/http"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
 
+	"github.com/alsolovyev/dummy-api/internal/entity"
 	"github.com/alsolovyev/dummy-api/pkg/slices"
 )
 
@@ -23,22 +24,31 @@ func New() *FileRepo {
 	return &FileRepo{}
 }
 
-func (f *FileRepo) GetFile(p string) (interface{}, error) {
+func (f *FileRepo) GetFile(p string) (interface{}, *entity.Error) {
 	ext := strings.ToLower(filepath.Ext(p))
 
 	if !slices.Contains(supportedFileExts, ext) {
-		return nil, errors.New(fmt.Sprintf("Files with '%s' extension are not supported.", ext))
+		return nil, entity.NewError(
+			http.StatusBadRequest,
+			fmt.Sprintf("Files with '%s' extension are not supported.", ext),
+		)
 	}
 
 	b, err := f.ReadFile(p)
 	if err != nil {
-		return nil, errors.New(fmt.Sprintf("File '%s' does not exist", p))
+		return nil, entity.NewError(
+			http.StatusNotFound,
+			fmt.Sprintf("File '%s' does not exist", p),
+		)
 	}
 
 	if ext == ".json" {
 		d, err := f.ParseJson(b)
 		if err != nil {
-			return nil, errors.New(fmt.Sprintf("An error occurred while parsing '%s': %s", p, err.Error()))
+			return nil, entity.NewError(
+				http.StatusBadRequest,
+				fmt.Sprintf("An error occurred while parsing '%s': %s", p, err.Error()),
+			)
 		}
 
 		return d, nil

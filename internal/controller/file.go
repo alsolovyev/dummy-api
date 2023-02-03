@@ -20,14 +20,13 @@ func filenameMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-
 func handleFile(f entity.FileUseCaser) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		p := r.Context().Value(filenameKey).(string)
 
 		d, err := f.GetFile(p)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			err.Render(w)
 			return
 		}
 
