@@ -68,6 +68,12 @@ curl 'http://localhost:8181/api/v1/ping?delay=2s'
 curl 'http://localhost:8181/api/v1/file/users.json?delay=5s' | json_pp
 ```
 
+### Status Code
+The "statusCodeMiddleware" provides a flexible solution for manipulating the HTTP response status code. This is useful for testing and simulation scenarios where custom error need to be generated. The middleware reads the "status_code" query parameter from the URL of the incoming request. If the parameter value is a valid HTTP status code within the range of 100 to 599, the middleware sets the HTTP response status code to the specified value. If the value of the "status_code" parameter is not a valid HTTP status code, the middleware will skip this step and proceed with serving the request normally.
+```shell
+curl 'http://localhost:8181/api/v1/file/errors.json?status_code=501' | json_pp
+```
+
 
 <br />
 
